@@ -1,0 +1,138 @@
+---
+title: "Swimming Investigation"
+date: "2/27/2021"
+output:
+  word_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Mathematics IA
+##Background Information:
+  Throughout the years, a certain physique has been known in the athletic world as the “swimmer’s body.” This body is usually very tall with long arms and legs and big hands and feet. Many professionals have even questioned if there is a perfect ratio for the optimal swimmer and used Michael Phelps as an example. As a swimmer myself, I have been thrown into this swimmer world and have questioned myself if certain body types yield to better swimmers in the pool. Through my research, I hope to address whether certain body heights do correlate with higher success in swimming competitions.
+# Data
+  Because of COVID, my experiment data will be collected through online sources. I will use this data to analyze the correlation between the height of a swimmer and their success in the competitive swimming world.
+  All my data comes from a machine learning library in kaggle linked below, based on the Rio
+Olympic results.
+  First, I will collect the data for both the heights and measurements of US olympic swimmers from 2016. Then, I will collect times for these swimmers across different competitions throughout recent years. I will compare those who race in similar events so the times can be compared easier.
+
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(broom)
+library(infer)
+
+Olympics <- read.csv("athlete_events.csv")
+
+Olympics <- Olympics %>%
+  mutate(BMI = 10000 * Weight/(Height*Height))
+
+Olympics <- Olympics %>%
+  mutate(Swm = (Sport=="Swimming"))
+
+MOlympics <- Olympics %>%
+  filter(Sex == "M")
+
+SOlympics <- Olympics %>%
+  filter(Swm == TRUE)
+
+rioOly <- SOlympics %>%
+  filter(Year == "2016")
+
+mswimmers <- rioOly %>%
+  filter(Sex == "M")
+
+free100 <- mswimmers %>%
+  filter(Event == "Swimming Men's 100 metres Freestyle")
+
+free400 <- mswimmers %>%
+  filter(Event == "Swimming Men's 400 metres Freestyle")
+
+free800 <- mswimmers %>%
+  filter(Event == "Swimming Men's 800 metres Freestyle")
+```
+
+# Methodology
+  This data will be put into spreadsheets to better analyze and visualize the data.
+I will use the spreadsheets to help find if there is a correlation between wingspan and speeds of different swimmers across the US.
+	The independent variable for this experiment would be the measurements of each swimmer.
+	The dependent variable for the experiment would be the times of the swimmers and their success in the competitive swimmer world.
+Uncontrolled variables that may affect the results include weather, stress of competition, pool temperatures, and other factors that could interfere with the race’s times. 
+To minimize these uncontrolled variables like weather, competition, and pool temperatures I will attempt to collect data from swim meets in which all of the test subjects were present and racing.
+
+```{r}
+summary(free100$Height)
+t.test(free100$Height)$"conf.int"
+
+summary(free100$BMI)
+t.test(free100$BMI)$"conf.int"
+
+summary(free400$Height)
+t.test(free100$Height)$"conf.int"
+
+summary(free400$BMI)
+t.test(free100$BMI)$"conf.int"
+
+summary(free800$Height)
+t.test(free100$Height)$"conf.int"
+
+summary(free800$BMI)
+t.test(free100$BMI)$"conf.int"
+
+summary(MOlympics$Height)
+summary(MOlympics$BMI)
+
+#compares based on height and year
+ggplot(Olympics, aes(x = Height, fill = Sex)) +
+  geom_histogram(alpha = 0.5) + theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  facet_wrap(~ Year=="2016", scales = "free")
+
+#compares swimmers vs non-swimmers based on Height
+ggplot(Olympics, aes(x = Height, fill = Sex)) +
+  geom_histogram(alpha = 0.5) + theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  facet_wrap(~ Swm, scales = "free")
+
+#compares based on BMI and year
+ggplot(Olympics, aes(x = BMI, fill = Sex)) +
+  geom_histogram(alpha = 0.5) + theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  facet_wrap(~ Year=="2016", scales = "free")
+
+#compares swimmers vs non-swimmers based on BMI
+ggplot(Olympics, aes(x = BMI, fill = Sex)) +
+  geom_histogram(alpha = 0.5) + theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  facet_wrap(~ Swm, scales = "free")
+
+#compares swim medalists to non medalists
+ggplot(rioOly, aes(x = BMI, fill = Sex)) +
+  geom_histogram(alpha = 0.5) + theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  facet_wrap(~ Medal, scales = "free")
+
+ggplot(rioOly, aes(x = Height, fill = Sex)) +
+  geom_histogram(alpha = 0.5) + theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  facet_wrap(~ Medal, scales = "free")
+
+#Linear Regressions. We can compare how much height has grown for swimmers and non swimmers, How much BMI has shrunk for swimers and non-swimmers
+regOlympics <- lm(Height ~ Year, data = Olympics)
+summary(regOlympics)
+confint(regOlympics)
+
+swimOlympics <- lm(Height ~ Year, data = SOlympics)
+summary(swimOlympics)
+confint(swimOlympics)
+
+regOlympics2 <- lm(BMI ~ Year, data = Olympics)
+summary(regOlympics2)
+confint(regOlympics2)
+
+swimOlympics2 <- lm(BMI ~ Year, data = SOlympics)
+summary(swimOlympics2)
+confint(swimOlympics2)
+```
+
+Your turn!
+RENEE write me a conclusion on google docs that explains that you are 95 percent confident that swimmers have both lower BMI than non-swimmers, swimmers are taller than non-swimmers, and explain what variation you see in height for distance vs non-distance swimmers, ALL OF THIS IS ONLY FOR MALES 
+and tell me that from the two sets of histograms we see that male swimmers are concentrated towards having more height than the females, and that there is 
