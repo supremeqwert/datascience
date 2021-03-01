@@ -40,20 +40,17 @@ MOlympics <- Olympics %>%
 SOlympics <- Olympics %>%
   filter(Swm == TRUE)
 
-rioOly <- SOlympics %>%
+rioOly <- MOlympics %>%
   filter(Year == "2016")
 
 mswimmers <- rioOly %>%
-  filter(Sex == "M")
+  filter(Swm == TRUE)
 
 free100 <- mswimmers %>%
   filter(Event == "Swimming Men's 100 metres Freestyle")
 
 free400 <- mswimmers %>%
   filter(Event == "Swimming Men's 400 metres Freestyle")
-
-free800 <- mswimmers %>%
-  filter(Event == "Swimming Men's 800 metres Freestyle")
 ```
 
 # Methodology
@@ -72,22 +69,21 @@ summary(free100$BMI)
 t.test(free100$BMI)$"conf.int"
 
 summary(free400$Height)
-t.test(free100$Height)$"conf.int"
+t.test(free400$Height)$"conf.int"
 
 summary(free400$BMI)
-t.test(free100$BMI)$"conf.int"
+t.test(free400$BMI)$"conf.int"
 
-summary(free800$Height)
-t.test(free100$Height)$"conf.int"
-
-summary(free800$BMI)
-t.test(free100$BMI)$"conf.int"
-
-summary(MOlympics$Height)
-summary(MOlympics$BMI)
+summary(rioOly$Height)
+summary(rioOly$BMI)
 
 #compares based on height and year
 ggplot(Olympics, aes(x = Height, fill = Sex)) +
+  geom_histogram(alpha = 0.5) + theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  facet_wrap(~ Year=="2016", scales = "free")
+
+#compares based on height for swimmers
+ggplot(SOlympics, aes(x = Height, fill = Sex)) +
   geom_histogram(alpha = 0.5) + theme(axis.text.x = element_text(angle = 45, hjust = 1))+
   facet_wrap(~ Year=="2016", scales = "free")
 
@@ -101,19 +97,15 @@ ggplot(Olympics, aes(x = BMI, fill = Sex)) +
   geom_histogram(alpha = 0.5) + theme(axis.text.x = element_text(angle = 45, hjust = 1))+
   facet_wrap(~ Year=="2016", scales = "free")
 
+#compares based on BMI for swimmers
+ggplot(SOlympics, aes(x = BMI, fill = Sex)) +
+  geom_histogram(alpha = 0.5) + theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  facet_wrap(~ Year=="2016", scales = "free")
+
 #compares swimmers vs non-swimmers based on BMI
 ggplot(Olympics, aes(x = BMI, fill = Sex)) +
   geom_histogram(alpha = 0.5) + theme(axis.text.x = element_text(angle = 45, hjust = 1))+
   facet_wrap(~ Swm, scales = "free")
-
-#compares swim medalists to non medalists
-ggplot(rioOly, aes(x = BMI, fill = Sex)) +
-  geom_histogram(alpha = 0.5) + theme(axis.text.x = element_text(angle = 45, hjust = 1))+
-  facet_wrap(~ Medal, scales = "free")
-
-ggplot(rioOly, aes(x = Height, fill = Sex)) +
-  geom_histogram(alpha = 0.5) + theme(axis.text.x = element_text(angle = 45, hjust = 1))+
-  facet_wrap(~ Medal, scales = "free")
 
 #Linear Regressions. We can compare how much height has grown for swimmers and non swimmers, How much BMI has shrunk for swimers and non-swimmers
 regOlympics <- lm(Height ~ Year, data = Olympics)
